@@ -26,8 +26,9 @@ testing stolen cards (OWASP OAT-001 Carding and OAT-010 Card Cracking).
 > - **Do not expose `app/` on a public network** without a WAF in front of it or
 >   an ACL restricting access. It has no rate limiting, no bot detection and no
 >   CSRF protection, by design.
-> - This is a personal project. It is **not an official Barracuda Networks
->   product** and is not endorsed, supported or warranted by them.
+> - This is demonstration material, **not a supported Barracuda product**. It is
+>   not part of any Barracuda product and is not covered by any support
+>   agreement or SLA. Please don't raise Support cases about it.
 > - Provided **without warranty of any kind**. You are responsible for how you
 >   use it.
 >

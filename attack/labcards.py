@@ -12,7 +12,7 @@ looks like. It deliberately does not reveal which cards are live -- only
 submitting them tells you that, and that is exactly the question the checkout
 form answers for free when it is left unprotected.
 
-Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
+Copyright 2026 Barracuda Networks, Inc. Licensed under the Apache License 2.0.
 """
 
 import argparse

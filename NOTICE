@@ -1,5 +1,5 @@
 waf-demo-credit-cards
-Copyright 2026 Michael S Collins
+Copyright 2026 Barracuda Networks, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
@@ -47,16 +47,24 @@ DELIBERATELY VULNERABLE APPLICATION
     Do not deploy it on a public network without a web application firewall in
     front of it or a network ACL restricting access to it.
 
-NOT AN OFFICIAL BARRACUDA NETWORKS PRODUCT
-    This is a personal project. It is not produced, endorsed, supported, or
-    warranted by Barracuda Networks, Inc. References to Barracuda products and
-    documentation are descriptive only. All trademarks are the property of
-    their respective owners; this License grants no trademark rights (see
-    Apache License section 6).
+NOT A SUPPORTED BARRACUDA PRODUCT
+    This is demonstration and training material published by Barracuda
+    Networks, Inc. It is not part of any Barracuda product, is not covered by
+    any Barracuda support agreement, maintenance contract or service level
+    agreement, and carries no warranty. Please do not raise Barracuda Technical
+    Support cases about it.
+
+    References to Barracuda product features and documentation describe
+    behaviour at the time of writing and may become inaccurate as the products
+    change. Verify against the current documentation for your own tenant.
+
+    All trademarks are the property of their respective owners. This License
+    grants no trademark rights (see Apache License section 6), so a derivative
+    work may not use Barracuda names or marks to suggest endorsement.
 
 NO WARRANTY, NO LIABILITY
-    This software is provided "AS IS", without warranty of any kind. The author
-    accepts no liability for any claim, damages, or other liability arising
-    from its use or misuse. See the Apache License sections 7 and 8.
+    This software is provided "AS IS", without warranty of any kind. No
+    contributor accepts liability for any claim, damages, or other liability
+    arising from its use or misuse. See the Apache License sections 7 and 8.
 
 You are responsible for how you use this software.

@@ -85,11 +85,16 @@ Apache-2.0, chosen over MIT for the express patent grant, the trademark clause
 liability (§§7–8), and the `NOTICE` mechanism — §4(d) requires redistributors to
 carry it, which is how the authorised-use terms survive a fork.
 
+Copyright is **Barracuda Networks, Inc.** — this was built on company resources,
+unlike the sibling `waf-firing-range`, which is personally owned and MIT. Do not
+copy that repo's licence or copyright line over.
+
 `NOTICE` is load-bearing, not boilerplate. It carries the authorised-use terms,
-the no-real-cardholder-data warning, and the statement that this is **not an
-official Barracuda Networks product**. Keep that last one: the repo is about
-Barracuda products, authored by a Barracuda employee, published under personal
-copyright. Do not let those blur.
+the no-real-cardholder-data warning, and the statement that this is **not a
+supported Barracuda product**. Keep that last one precise: Barracuda owns and
+publishes this, so it cannot disclaim authorship — what it disclaims is
+*support*. It is not part of any product, carries no SLA, and should not
+generate Support cases.
 
 No OSI-approved licence can restrict use, so misuse is addressed by three other
 layers instead: the `NOTICE`, the runtime banners, and the target allowlist.

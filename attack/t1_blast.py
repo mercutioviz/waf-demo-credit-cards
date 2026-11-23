@@ -13,7 +13,7 @@ Expected result with Brute Force Prevention on POST /checkout: outcomes flip to
 AUTHORISED LABORATORY USE ONLY. Simulates payment card fraud; run only
 against systems you own or have written permission to test. See NOTICE.
 
-Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
+Copyright 2026 Barracuda Networks, Inc. Licensed under the Apache License 2.0.
 """
 
 import time
