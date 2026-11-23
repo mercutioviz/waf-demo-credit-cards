@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Payment {{ 'approved' if approved else 'declined' }} — Tek Gear{% endblock %}
+
+{% block content %}
+<div class="container result">
+  {% if approved %}
+  <div class="result-card approved">
+    <h1>Payment approved</h1>
+    <p>Thank you. Your order reference is <strong>{{ order_ref }}</strong>.</p>
+    <p class="muted">Card {{ masked }} charged successfully.</p>
+  </div>
+  {% else %}
+  <div class="result-card declined">
+    <h1>Card declined</h1>
+    <p>{{ message }} (code {{ code }}).</p>
+    <p class="muted">Card {{ masked }} was not charged. Please check your details and try again.</p>
+  </div>
+  {% endif %}
+  <a class="btn-secondary" href="{{ url_for('shop.checkout_form') }}">Try another card</a>
+</div>
+{% endblock %}

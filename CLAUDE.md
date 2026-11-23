@@ -1,0 +1,144 @@
+# waf-demo-credit-cards — Active Context for AI Assistants
+
+This file is auto-loaded by Claude Code on every session in this repo.
+
+## Project purpose
+
+A carding attack lab for Barracuda WAF-as-a-Service demos, built for a specific
+customer case: a checkout form carrying credit card fields is being abused by
+bots testing stolen cards.
+
+The audience is Barracuda SAs and partner sales engineers running a live
+before/after demo in front of a prospect. The app is intentionally vulnerable
+and must never be exposed on a public IP without either a WAF in front of it or
+an NSG restricting access.
+
+## The core design decision
+
+This is built as an **escalation ladder**, not an on/off toggle, because the
+honest answer about carding is unflattering to a naive pitch: rate limiting
+alone does not stop it. Each attacker tier defeats the control that stopped the
+tier below.
+
+Every change should preserve that structure. A change that makes the WAF look
+like it fixes everything makes the demo *less* persuasive, not more — it invites
+the one objection an SA cannot answer.
+
+## Topology
+
+| Instance | Route | Who reaches it |
+|---|---|---|
+| `checkout-insecure` | `insecure.pay.democuda.org` → host:443 → Caddy | Public internet |
+| `checkout-secure` | `secure.pay.democuda.org` → WaaS → host:8081 → Caddy | WaaS only (NSG-restricted) |
+
+Both run the same image and share `LAB_SECRET` so the comparison is
+like-for-like. They differ only by `INSTANCE_NAME`.
+
+**Port 8081, not 8080.** The `waf-training-wordpress` stack holds 8080 and 8443
+on this host. Caddy binds 80 and 443, so this stack and `waf-firing-range`
+cannot run simultaneously.
+
+## State
+
+Everything is in-memory, per container. No database, no volumes, no seed
+snapshots. `POST /ops/reset` zeroes a run instantly, which is what an SA needs
+between demo attempts.
+
+**Gunicorn runs one worker on purpose** (`--workers 1 --threads 32`). Telemetry
+lives in process memory; a second worker would split the counters and silently
+desync the dashboard mid-demo. Do not "fix" this by adding workers — if the app
+ever needs to scale, the telemetry has to move out of process first.
+
+## The fake issuer
+
+`app/tekgear/issuer.py`. Liveness, expiry and CVV all derive from
+`HMAC-SHA256(LAB_SECRET, PAN)`. Deterministic, so demos are repeatable across
+restarts; meaningless outside this lab.
+
+`attack/labcards.py:derive_credentials()` **mirrors this derivation.** If you
+change the derivation in one, change it in the other or every attack run returns
+code 05.
+
+The decline codes are deliberately distinguishable — 54 for a wrong expiry, 82
+for a wrong CVV. That is not an oversight. It is the vulnerability tier 5
+exploits, and the developer-fix point the demo closes on.
+
+## Safety invariants
+
+Do not weaken these.
+
+- Synthetic cards only, from published sandbox BIN ranges. No real PANs, ever.
+- No real payment gateway. The issuer stays local and fake.
+- `/ops` displays masked PANs only (first six, last four).
+- `labcards.guard_target()` allowlists `*.democuda.org` and localhost. `--force`
+  exists but warns.
+- `LAB_SECRET` is env-sourced and never committed, so the live-card oracle is
+  not baked into the repo.
+
+## Repository layout
+
+```
+waf-demo-credit-cards/
+├── docker-compose.yml          # name: waf-demo-credit-cards
+├── Makefile                    # up, down, build, logs, ps, reset
+├── caddy/                      # custom Caddy build (Route53 DNS-01) + vhosts
+├── brand/                      # Tek Gear assets, vendored from waf-firing-range
+├── app/
+│   ├── Dockerfile              # repo-root build context so COPY brand/ works
+│   └── tekgear/
+│       ├── issuer.py           # fake payment processor
+│       ├── telemetry.py        # thread-safe in-memory counters + SSE fanout
+│       ├── views_shop.py       # storefront and the checkout target
+│       ├── views_ops.py        # dashboard, snapshot, stream, reset
+│       ├── templates/
+│       └── static/             # app.css, ops.js, brand/ (copied at build)
+├── attack/
+│   ├── labcards.py             # Luhn gen, dump builder, target guard, tally
+│   ├── t1_blast.py             # naive flood
+│   ├── t2_slowroll.py          # session-aware, rate-evading
+│   ├── t4_browser.py           # Playwright headless
+│   └── t5_crack.py             # OAT-010 card cracking
+├── configs/waf/                # WaaS policy notes, one section per rung
+└── docs/demo-script.md         # the SA playbook
+```
+
+## Relationship to waf-firing-range
+
+This repo borrows that one's conventions — Caddyfile shape, compose style, the
+`insecure.*`/`secure.*` pair, the Tek Gear brand — but is **standalone** so other
+SAs can clone it alone.
+
+Two deliberate divergences:
+
+- **`brand/` is vendored, not shared.** That repo's "do not duplicate brand
+  assets" rule binds within it; a standalone repo cannot bind-mount a sibling.
+- **No `## Intended kast findings` table.** This is a narrative demo, not a kast
+  regression target. App READMEs use `## Deliberate weaknesses` mapped to WaaS
+  controls instead, and assets are referenced over HTTPS — the mixed-content
+  findings that repo wants deliberately would be noise here.
+
+Note that `waf-firing-range` is currently a scaffold: its infra is real but
+every `apps/*/` holds only a README. There is no Flask app there to copy from.
+
+## Dashboard design
+
+`/ops` uses the **emphasis form**: one accent hue (brand orange `#E8660A`) marks
+"the attacker got a hit", everything else is de-emphasis ink. A status red was
+tried and rejected — it measured only ΔE 11.0 from brand orange for normal
+vision against a floor of 15, so the two states would have been hard to tell
+apart. Every outcome also carries a text label, so colour is never the only
+channel. Keep both properties if you restyle it.
+
+The hero figure is **live cards found** — the number that costs the customer
+money. Exactly one hero per view.
+
+## House style
+
+- No emojis in code or docs
+- Default to no comments; add one only when the WHY is non-obvious
+- Keep it minimal. A demo that breaks in front of a prospect is worse than a
+  demo that does less
+- All deliberate weaknesses must be documented in `app/README.md`. An
+  undocumented vulnerability is a liability
+- Vanilla JS on the dashboard. There is no Node toolchain on the demo host, and
+  a demo screen that needs a build step is one that breaks at the wrong moment

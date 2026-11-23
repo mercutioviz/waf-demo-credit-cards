@@ -1,0 +1,70 @@
+# waf-demo-credit-cards
+#
+# Carding attack demo: a deliberately unprotected Tek Gear checkout form, run as
+# an insecure/secure pair for a before/after Barracuda WaaS demonstration.
+#
+# Start everything:  make up
+# See Makefile for all convenience targets.
+#
+# No top-level `name:` key: Compose v1 rejects it, and the project name it would
+# set is identical to the directory name Compose derives anyway. The Makefile
+# works with either v1 or v2.
+
+networks:
+  proxy:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+services:
+
+  # ── Reverse proxy ──────────────────────────────────────────────────────────
+  caddy:
+    build: ./caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+      - "8081:8081"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      AWS_ACCESS_KEY_ID:     ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION:            ${AWS_REGION:-us-east-1}
+    networks:
+      - proxy
+
+  # ── Checkout app ───────────────────────────────────────────────────────────
+  # Both instances run the same image and the same LAB_SECRET, so a card that is
+  # live on one is live on the other — the before/after comparison is like-for-like.
+  # They differ only by INSTANCE_NAME, which /ops displays so an SA can tell the
+  # two browser panes apart on screen.
+  checkout-insecure:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    restart: unless-stopped
+    environment:
+      INSTANCE_NAME: insecure
+      LAB_SECRET:    ${LAB_SECRET}
+      LIVE_RATE:     ${LIVE_RATE:-2}
+    networks:
+      - proxy
+
+  checkout-secure:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    restart: unless-stopped
+    environment:
+      INSTANCE_NAME: secure
+      LAB_SECRET:    ${LAB_SECRET}
+      LIVE_RATE:     ${LIVE_RATE:-2}
+    networks:
+      - proxy

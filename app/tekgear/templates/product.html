@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Tek Gear{% endblock %}
+
+{% block content %}
+<div class="container detail">
+  <div class="detail-image" style="background: {{ product.image_color }}">{{ product.sku }}</div>
+  <div class="detail-body">
+    <p class="category">{{ product.category }}</p>
+    <h1>{{ product.name }}</h1>
+    <p class="price">£{{ '%.2f'|format(product.price) }}</p>
+    <p>{{ product.description }}</p>
+    <a class="btn-primary" href="{{ url_for('shop.checkout_form', sku=product.sku) }}">Buy now</a>
+  </div>
+</div>
+{% endblock %}

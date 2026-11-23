@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Payment operations — Tek Gear{% endblock %}
+{% block body_class %}ops{% endblock %}
+
+{% block content %}
+<div class="ops-bar">
+  <div>
+    <h1>Payment operations</h1>
+    <span class="instance">instance: {{ instance }}</span>
+  </div>
+  <button type="button" id="reset">Reset counters</button>
+</div>
+
+<div class="ops-grid">
+  <div class="ops-top">
+    <section class="panel">
+      <h2>Live cards found</h2>
+      <p class="hero-figure" id="hero">0</p>
+      <p class="hero-sub">Cards the attacker has confirmed are chargeable</p>
+      <ul class="live-cards" id="live-cards"></ul>
+      <p class="empty" id="live-empty">None yet.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Authorisation attempts</h2>
+      <div class="kpi-row">
+        <div class="kpi">
+          <p class="label">Cards tested</p>
+          <p class="value" id="total">0</p>
+          <p class="sub" id="elapsed">0s elapsed</p>
+        </div>
+        <div class="kpi">
+          <p class="label">Declined</p>
+          <p class="value" id="declined">0</p>
+          <p class="sub" id="decline-codes">&mdash;</p>
+        </div>
+        <div class="kpi">
+          <p class="label">Requests/sec</p>
+          <p class="value" id="rate">0</p>
+          <svg id="spark" width="104" height="26" viewBox="0 0 104 26" aria-hidden="true"></svg>
+        </div>
+        <div class="kpi">
+          <p class="label">Distinct sources</p>
+          <p class="value" id="ips">0</p>
+          <p class="sub" id="sessions">0 sessions</p>
+        </div>
+        <div class="kpi">
+          <p class="label">Distinct BINs</p>
+          <p class="value" id="bins">0</p>
+          <p class="sub">Issuer ranges seen</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Recent attempts</h2>
+    <table class="attempts">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Card</th>
+          <th>BIN</th>
+          <th>Outcome</th>
+          <th>Code</th>
+          <th>Source IP</th>
+          <th>Client</th>
+          <th>Session</th>
+        </tr>
+      </thead>
+      <tbody id="attempts"></tbody>
+    </table>
+    <p class="empty" id="attempts-empty">No attempts recorded.</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block head %}
+<script defer src="{{ url_for('static', filename='ops.js') }}"></script>
+{% endblock %}

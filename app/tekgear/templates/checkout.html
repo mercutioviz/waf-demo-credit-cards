@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Checkout — Tek Gear{% endblock %}
+
+{% block content %}
+<div class="container checkout">
+  <h1 class="section-title">Secure checkout</h1>
+
+  <div class="order-summary">
+    <span>{{ product.name }}</span>
+    <strong>£{{ '%.2f'|format(product.price) }}</strong>
+  </div>
+
+  <form method="post" action="{{ url_for('shop.checkout_submit') }}" class="card-form">
+    <label for="cardholder">Cardholder name</label>
+    <input type="text" id="cardholder" name="cardholder" autocomplete="cc-name" required>
+
+    <label for="card_number">Card number</label>
+    <input type="text" id="card_number" name="card_number" inputmode="numeric"
+           autocomplete="cc-number" maxlength="19" placeholder="4111 1111 1111 1111" required>
+
+    <div class="field-row">
+      <div>
+        <label for="exp_month">Expiry month</label>
+        <input type="text" id="exp_month" name="exp_month" inputmode="numeric"
+               maxlength="2" placeholder="MM" required>
+      </div>
+      <div>
+        <label for="exp_year">Expiry year</label>
+        <input type="text" id="exp_year" name="exp_year" inputmode="numeric"
+               maxlength="2" placeholder="YY" required>
+      </div>
+      <div>
+        <label for="cvv">Security code</label>
+        <input type="text" id="cvv" name="cvv" inputmode="numeric"
+               maxlength="4" placeholder="CVV" required>
+      </div>
+    </div>
+
+    <label for="postcode">Billing postcode</label>
+    <input type="text" id="postcode" name="postcode" autocomplete="postal-code" required>
+
+    <button type="submit" class="btn-primary">Pay £{{ '%.2f'|format(product.price) }}</button>
+  </form>
+</div>
+{% endblock %}

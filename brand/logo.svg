@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 70" width="260" height="70" role="img" aria-label="Tek Gear">
+  <!-- Mountain icon: shadow layer, orange peak, navy silhouette -->
+  <polygon points="16,58 40,16 64,58" fill="#1B2A4A" opacity="0.25"/>
+  <polygon points="28,58 56,10 84,58" fill="#E8660A"/>
+  <polygon points="16,58 40,16 64,58" fill="#1B2A4A"/>
+  <!-- Wordmark -->
+  <text x="96" y="42" font-family="'Arial Black','Arial',sans-serif" font-size="28" font-weight="900" fill="#1B2A4A" letter-spacing="0.5">TEK</text>
+  <text x="96" y="58" font-family="'Arial','Helvetica',sans-serif" font-size="13" font-weight="700" fill="#E8660A" letter-spacing="5">GEAR</text>
+</svg>

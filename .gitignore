@@ -1,0 +1,18 @@
+# waf-demo-credit-cards
+.env
+caddy/data/
+
+# Attack script output
+attack/*.json
+attack/found-*.txt
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/

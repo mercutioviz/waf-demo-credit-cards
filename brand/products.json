@@ -1,0 +1,98 @@
+[
+  {
+    "sku": "TG-BP-001",
+    "name": "Trail Runner Backpack 35L",
+    "category": "Packs",
+    "price": 89.99,
+    "description": "Lightweight 35-litre daypack with hydration sleeve and hip-belt pockets. Ideal for day hikes and trail running.",
+    "image_color": "#4A7C59"
+  },
+  {
+    "sku": "TG-TN-001",
+    "name": "Alpine Summit Tent 2P",
+    "category": "Shelter",
+    "price": 249.99,
+    "description": "Freestanding two-person three-season tent. 1.8 kg packed weight with full-coverage fly and two doors.",
+    "image_color": "#E8660A"
+  },
+  {
+    "sku": "TG-PL-001",
+    "name": "Carbon Trekking Poles (pair)",
+    "category": "Poles",
+    "price": 69.99,
+    "description": "100% carbon-fibre shafts with cork grips and tungsten carbide tips. Collapses to 60 cm.",
+    "image_color": "#1B2A4A"
+  },
+  {
+    "sku": "TG-HL-001",
+    "name": "Summit Headlamp 400 lm",
+    "category": "Lighting",
+    "price": 39.99,
+    "description": "USB-rechargeable headlamp with 400-lumen flood/spot modes and red night-vision mode. IPX4 rated.",
+    "image_color": "#2C4270"
+  },
+  {
+    "sku": "TG-RJ-001",
+    "name": "StormShield Rain Jacket",
+    "category": "Apparel",
+    "price": 129.99,
+    "description": "2.5-layer waterproof-breathable shell with taped seams. Packable into its own chest pocket.",
+    "image_color": "#5C8DBE"
+  },
+  {
+    "sku": "TG-BL-001",
+    "name": "Merino Base Layer Top",
+    "category": "Apparel",
+    "price": 64.99,
+    "description": "150 gsm 100% merino wool crew-neck top. Naturally odour-resistant. Sizes XS–XXL.",
+    "image_color": "#9B7B5A"
+  },
+  {
+    "sku": "TG-WF-001",
+    "name": "ClearFlow Water Filter Straw",
+    "category": "Hydration",
+    "price": 24.99,
+    "description": "Hollow-fibre filter removes 99.9999% of bacteria and protozoa. 1,000-litre rated life.",
+    "image_color": "#4A9BB5"
+  },
+  {
+    "sku": "TG-FL-001",
+    "name": "Insulated Flask 32 oz",
+    "category": "Hydration",
+    "price": 34.99,
+    "description": "18/8 stainless steel double-wall vacuum flask. Keeps drinks cold 24 h, hot 12 h.",
+    "image_color": "#C0C0BC"
+  },
+  {
+    "sku": "TG-SB-001",
+    "name": "PolarSeal Sleeping Bag -10°C",
+    "category": "Shelter",
+    "price": 179.99,
+    "description": "Mummy-cut sleeping bag rated to -10°C comfort. 650-fill recycled down. Packsize 20 × 35 cm.",
+    "image_color": "#2C4270"
+  },
+  {
+    "sku": "TG-CH-001",
+    "name": "Ascent Climbing Harness",
+    "category": "Climbing",
+    "price": 94.99,
+    "description": "CE-certified sport harness with four gear loops and pre-threaded speed buckle. Sizes S–XL.",
+    "image_color": "#E8660A"
+  },
+  {
+    "sku": "TG-HP-001",
+    "name": "Quick-Dry Hiking Pants",
+    "category": "Apparel",
+    "price": 54.99,
+    "description": "Lightweight nylon-stretch hiking trousers with zip-off legs. UPF 40+ sun protection.",
+    "image_color": "#6B7B5A"
+  },
+  {
+    "sku": "TG-SC-001",
+    "name": "SolarCharge Panel 10W",
+    "category": "Power",
+    "price": 59.99,
+    "description": "Foldable monocrystalline solar panel with dual USB-A and USB-C outputs. 200 g, water-resistant.",
+    "image_color": "#3A3A3A"
+  }
+]

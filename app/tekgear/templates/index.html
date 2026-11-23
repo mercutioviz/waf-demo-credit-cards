@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Tek Gear — Outdoor and Camping Equipment{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Gear That Goes Further</h1>
+  <p>Packs, shelter and lighting built for long days on the trail. Free shipping on orders over £75.</p>
+  <a class="btn-primary" href="{{ url_for('shop.checkout_form') }}">Shop now</a>
+</section>
+
+<h2 class="section-title">Featured equipment</h2>
+
+<div class="product-grid">
+  {% for product in products %}
+  <article class="product-card">
+    <div class="product-card-image" style="background: {{ product.image_color }}">{{ product.sku }}</div>
+    <div class="product-card-body">
+      <p class="category">{{ product.category }}</p>
+      <h3>{{ product.name }}</h3>
+      <p class="price">£{{ '%.2f'|format(product.price) }}</p>
+      <p>{{ product.description }}</p>
+      <a class="btn-secondary" href="{{ url_for('shop.product', sku=product.sku) }}">View</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

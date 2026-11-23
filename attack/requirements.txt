@@ -1,0 +1,5 @@
+requests==2.32.3
+
+# Tier 4 only. After installing, fetch the browser binary:
+#   playwright install chromium
+playwright==1.49.0
