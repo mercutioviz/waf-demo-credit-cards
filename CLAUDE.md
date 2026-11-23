@@ -28,8 +28,15 @@ the one objection an SA cannot answer.
 
 | Instance | Route | Who reaches it |
 |---|---|---|
-| `checkout-insecure` | `insecure.pay.democuda.org` → host:443 → Caddy | Public internet |
-| `checkout-secure` | `secure.pay.democuda.org` → WaaS → host:8081 → Caddy | WaaS only (NSG-restricted) |
+| `checkout-insecure` | `$INSECURE_HOST` → host:443 → Caddy | Public internet |
+| `checkout-secure` | `$SECURE_HOST` → WaaS → host:8081 → Caddy | WaaS only (NSG-restricted) |
+
+**Hostnames are not hardcoded.** `INSECURE_HOST`, `SECURE_HOST`, `ACME_EMAIL`
+and `LAB_DOMAINS` live in `.env` and flow to Caddy (via compose env, substituted
+as `{$VAR}` in the Caddyfile), to the Makefile (sourced in a shell, not
+`include`d, so odd values cannot break the parse), and to the attack scripts.
+Defaults are the `democuda.org` names. If you add a hostname reference, read it
+from one of those rather than writing a literal.
 
 Both run the same image and share `LAB_SECRET` so the comparison is
 like-for-like. They differ only by `INSTANCE_NAME`.
@@ -70,9 +77,9 @@ exploits, and the developer-fix point the demo closes on.
 - Synthetic cards only, from published sandbox BIN ranges. No real PANs, ever.
 - No real payment gateway. The issuer stays local and fake.
 - `/ops` displays masked PANs only (first six, last four).
-- `labcards.guard_target()` allowlists `*.democuda.org` and localhost.
-  `--force` overrides it but **requires `--authorization`** — do not make the
-  override usable on its own.
+- `labcards.guard_target()` allowlists `LAB_DOMAINS` plus loopback. `--force`
+  overrides it but **requires `--authorization`** — do not make the override
+  usable on its own, and do not let loopback drop out of the always-allowed set.
 - `labcards.preflight()` prints the authorised-use banner. Every attack script
   calls it first. A new tier must call it too.
 - `LAB_SECRET` is env-sourced and never committed, so the live-card oracle is

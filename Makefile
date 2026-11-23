@@ -3,8 +3,11 @@
 # Compose v2 plugin where available, v1 binary otherwise.
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 
-INSECURE_HOST := insecure.pay.democuda.org
-SECURE_HOST   := secure.pay.democuda.org
+# Hostnames come from .env when it exists, so moving the lab to another domain
+# is a one-file change. Sourced in a shell rather than `include`d so arbitrary
+# values in .env (quotes, spaces, '$') cannot break the Makefile parse.
+INSECURE_HOST ?= $(shell . ./.env 2>/dev/null; echo $${INSECURE_HOST:-insecure.pay.democuda.org})
+SECURE_HOST   ?= $(shell . ./.env 2>/dev/null; echo $${SECURE_HOST:-secure.pay.democuda.org})
 
 up:
 	$(COMPOSE) up -d

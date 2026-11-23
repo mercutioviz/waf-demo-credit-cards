@@ -28,7 +28,9 @@ They are built to be useless outside a lab:
   crossed a threshold. There is no payment network, and a verdict here means
   nothing anywhere else.
 - **The target is allowlisted.** `labcards.guard_target()` refuses any host
-  outside `*.democuda.org`, `localhost` and `127.0.0.1`.
+  outside `LAB_DOMAINS` (default `.democuda.org`), plus `localhost` and
+  `127.0.0.1`, which are always permitted because loopback cannot reach anyone
+  else's system.
 - **`--force` cannot be used alone.** Overriding the allowlist also requires
   `--authorization '<engagement, ticket or permission reference>'`, which is
   echoed into the run's output:
@@ -48,7 +50,10 @@ They are built to be useless outside a lab:
 ```bash
 pip install -r requirements.txt
 playwright install chromium   # tier 4 only
-export LAB_SECRET=<the same value as the lab's .env>
+
+# Load the lab's settings: LAB_SECRET for the dump, LAB_DOMAINS for the
+# target allowlist, LAB_TARGET to override the default --target.
+set -a; . ../.env; set +a
 ```
 
 `--secret` must match the target's `LAB_SECRET`. The dump generator uses it to

@@ -29,7 +29,16 @@ from urllib.parse import urlparse
 # for sandbox use; none of them route to a real issuer.
 TEST_BINS = ("411111", "424242", "511111", "555555", "601111")
 
-ALLOWED_HOST_SUFFIXES = (".democuda.org", "localhost", "127.0.0.1")
+# Loopback is always permitted; it cannot reach anyone else's system. Everything
+# else comes from LAB_DOMAINS so the allowlist follows the lab if it moves zone.
+LOCAL_HOSTS = ("localhost", "127.0.0.1")
+ALLOWED_HOST_SUFFIXES = LOCAL_HOSTS + tuple(
+    suffix.strip()
+    for suffix in os.environ.get("LAB_DOMAINS", ".democuda.org").split(",")
+    if suffix.strip()
+)
+
+DEFAULT_TARGET = os.environ.get("LAB_TARGET", "https://insecure.pay.democuda.org")
 
 APPROVED_MARKER = "Payment approved"
 DECLINE_PATTERN = re.compile(r"code (\d{2})")
@@ -178,8 +187,8 @@ def preflight(args):
 
 def base_parser(description):
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("--target", default="https://insecure.pay.democuda.org",
-                        help="base URL of the checkout under test")
+    parser.add_argument("--target", default=DEFAULT_TARGET,
+                        help=f"base URL of the checkout under test (default: {DEFAULT_TARGET})")
     parser.add_argument("--secret", default=os.environ.get("LAB_SECRET", "dev-only-insecure-default"),
                         help="LAB_SECRET of the target lab; seeds the synthetic dump")
     parser.add_argument("--count", type=int, default=200, help="number of cards to test")

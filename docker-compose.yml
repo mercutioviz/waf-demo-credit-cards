@@ -34,6 +34,9 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
+      INSECURE_HOST:         ${INSECURE_HOST:-insecure.pay.democuda.org}
+      SECURE_HOST:           ${SECURE_HOST:-secure.pay.democuda.org}
+      ACME_EMAIL:            ${ACME_EMAIL:-admin@democuda.org}
       AWS_ACCESS_KEY_ID:     ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION:            ${AWS_REGION:-us-east-1}

@@ -103,6 +103,32 @@ Port 8081 rather than the usual 8080 because `waf-training-wordpress` already
 holds 8080 and 8443 on this host. Caddy binds 80 and 443, so this stack and
 `waf-firing-range` cannot run at the same time.
 
+## Using a different domain
+
+The two hostnames live in `.env` and nothing else reads them directly. To move
+the lab to another zone, edit that block and recreate the stack:
+
+```bash
+INSECURE_HOST=insecure.pay.cudalab.org
+SECURE_HOST=secure.pay.cudalab.org
+ACME_EMAIL=admin@cudalab.org
+LAB_DOMAINS=.cudalab.org
+```
+
+```bash
+make down && make up
+```
+
+Caddy substitutes these into its site addresses and host matchers at startup,
+the Makefile sources them for `make reset`, and `LAB_DOMAINS` sets the allowlist
+the attack scripts enforce. The Route53 credentials must have access to whichever
+zone you pick, since Caddy issues certificates over DNS-01.
+
+`localhost` and `127.0.0.1` stay permitted regardless of `LAB_DOMAINS`, so you
+can always test against a container directly.
+
+The example commands throughout these docs use the `democuda.org` defaults.
+
 ## Manual setup
 
 These cannot be scripted from inside the repo.

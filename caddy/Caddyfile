@@ -1,5 +1,5 @@
 {
-    email admin@democuda.org
+    email {$ACME_EMAIL}
     # AWS credentials for Route53 DNS-01 challenge are read from environment:
     # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 }
@@ -11,10 +11,14 @@
     }
 }
 
+# Hostnames come from the environment so the lab can be moved to another zone
+# by editing .env alone. Caddy substitutes {$VAR} before parsing, so these work
+# as site addresses and matcher arguments.
+
 # ── insecure side — public HTTPS on port 443 ──────────────────────────────
 # Reached directly by the attack scripts with no WAF in the path.
 
-insecure.pay.democuda.org {
+{$INSECURE_HOST} {
     import route53_tls
     reverse_proxy checkout-insecure:5000
 }
@@ -25,7 +29,7 @@ insecure.pay.democuda.org {
 # Port 8080 is unavailable on this host — the waf-training-wordpress stack has it.
 
 :8081 {
-    @checkout host secure.pay.democuda.org
+    @checkout host {$SECURE_HOST}
 
     handle @checkout {
         reverse_proxy checkout-secure:5000
