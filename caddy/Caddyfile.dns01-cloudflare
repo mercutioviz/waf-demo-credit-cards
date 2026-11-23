@@ -1,0 +1,25 @@
+# TLS_MODE=dns01-cloudflare -- ACME DNS-01 against Cloudflare's DNS API.
+#
+# Only needed when HTTP-01 will not work: port 80 blocked inbound, or the host
+# is not reachable from the public internet at the time of issuance. Otherwise
+# prefer http01, which needs no DNS API credentials at all.
+#
+# Requires in .env: CLOUDFLARE_API_TOKEN, scoped to Zone:DNS:Edit on the zone
+# containing INSECURE_HOST. Create it under My Profile > API Tokens; the older
+# Global API Key will not work with this module.
+{
+	email {$ACME_EMAIL}
+}
+
+(cloudflare_tls) {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+}
+
+{$INSECURE_HOST} {
+	import cloudflare_tls
+	reverse_proxy checkout-insecure:5000
+}
+
+import /etc/caddy/origin.caddyfile

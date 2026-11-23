@@ -1,0 +1,20 @@
+# Shared by every TLS mode: the WaaS origin on plain HTTP.
+#
+# WaaS terminates the customer-facing TLS at its edge, so this side never needs
+# a certificate -- which is why the TLS mode only ever affects the insecure
+# hostname. Azure NSG restricts :8081 to Barracuda WaaS source IP ranges.
+#
+# Port 8080 is avoided because the waf-training-wordpress stack holds it on the
+# original demo host.
+
+:8081 {
+	@checkout host {$SECURE_HOST}
+
+	handle @checkout {
+		reverse_proxy checkout-secure:5000
+	}
+
+	handle {
+		respond "Not found" 404
+	}
+}

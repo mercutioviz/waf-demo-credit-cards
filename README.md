@@ -103,31 +103,41 @@ Port 8081 rather than the usual 8080 because `waf-training-wordpress` already
 holds 8080 and 8443 on this host. Caddy binds 80 and 443, so this stack and
 `waf-firing-range` cannot run at the same time.
 
-## Using a different domain
+## Deploying in your own environment
 
-The two hostnames live in `.env` and nothing else reads them directly. To move
-the lab to another zone, edit that block and recreate the stack:
+Nothing here requires AWS or a particular DNS provider. The hostnames and the
+certificate strategy both come from `.env`:
 
 ```bash
-INSECURE_HOST=insecure.pay.cudalab.org
-SECURE_HOST=secure.pay.cudalab.org
-ACME_EMAIL=admin@cudalab.org
-LAB_DOMAINS=.cudalab.org
+TLS_MODE=http01
+INSECURE_HOST=insecure.pay.yourdomain.com
+SECURE_HOST=secure.pay.yourdomain.com
+ACME_EMAIL=you@yourdomain.com
+LAB_DOMAINS=.yourdomain.com
 ```
 
 ```bash
 make down && make up
 ```
 
-Caddy substitutes these into its site addresses and host matchers at startup,
-the Makefile sources them for `make reset`, and `LAB_DOMAINS` sets the allowlist
-the attack scripts enforce. The Route53 credentials must have access to whichever
-zone you pick, since Caddy issues certificates over DNS-01.
+`TLS_MODE` picks how Caddy gets a certificate for the insecure hostname — the
+secure side never needs one, since WaaS terminates TLS at its edge:
+
+| Mode | Needs | Use when |
+|---|---|---|
+| `http01` | port 80 open, an A record | **most deployments** — no DNS API credentials, works with any provider including GoDaddy and Barracuda DNS Zones |
+| `dns01-route53` | AWS API keys | port 80 cannot be opened |
+| `dns01-godaddy` | GoDaddy API token | port 80 cannot be opened |
+| `dns01-cloudflare` | Cloudflare scoped token | port 80 cannot be opened |
+| `internal` | nothing | offline app work; **WaaS cannot reach the origin, so the secure half of the demo will not work** |
+
+**[`docs/deployment.md`](docs/deployment.md) is the full guide** — per-provider
+setup, a walkthrough for Barracuda WaaS DNS Zones, how to add a DNS provider
+that isn't bundled, and how to verify issuance worked.
 
 `localhost` and `127.0.0.1` stay permitted regardless of `LAB_DOMAINS`, so you
-can always test against a container directly.
-
-The example commands throughout these docs use the `democuda.org` defaults.
+can always test a container directly. Example commands throughout these docs use
+the `democuda.org` defaults.
 
 ## Manual setup
 

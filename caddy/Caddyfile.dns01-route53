@@ -1,0 +1,24 @@
+# TLS_MODE=dns01-route53 -- ACME DNS-01 against an AWS Route53 hosted zone.
+#
+# Only needed when HTTP-01 will not work: port 80 blocked inbound, or the host
+# is not reachable from the public internet at the time of issuance. Otherwise
+# prefer http01, which needs no DNS API credentials at all.
+#
+# Requires in .env: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, with
+# permission to write TXT records in the zone containing INSECURE_HOST.
+{
+	email {$ACME_EMAIL}
+}
+
+(route53_tls) {
+	tls {
+		dns route53
+	}
+}
+
+{$INSECURE_HOST} {
+	import route53_tls
+	reverse_proxy checkout-insecure:5000
+}
+
+import /etc/caddy/origin.caddyfile

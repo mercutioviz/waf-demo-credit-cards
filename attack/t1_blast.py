@@ -57,7 +57,7 @@ def main():
     def run(record):
         # A fresh session per card: no cookie is ever reused, which is precisely
         # the signal that makes this tier trivial to spot.
-        with requests.Session() as session:
+        with labcards.new_session(args) as session:
             try:
                 outcome = attempt(session, url, record, args.timeout)
             except requests.RequestException as exc:

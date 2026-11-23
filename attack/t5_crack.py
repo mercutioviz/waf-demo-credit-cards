@@ -106,7 +106,7 @@ def main():
     print(f"tier 5: cracking {pan} at {url}")
     print("  phase 1: expiry (<=48 requests)")
 
-    with requests.Session() as session:
+    with labcards.new_session(args) as session:
         month, year, cvv = find_expiry(session, url, pan, args.timeout, tally, interval)
         if not month:
             print(tally.summary(time.time() - started))

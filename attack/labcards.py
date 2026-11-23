@@ -25,6 +25,8 @@ import sys
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 
+import requests
+
 # Well-known test BIN prefixes. These are the ranges payment processors publish
 # for sandbox use; none of them route to a real issuer.
 TEST_BINS = ("411111", "424242", "511111", "555555", "601111")
@@ -183,6 +185,20 @@ def preflight(args):
     """Print the use banner, then enforce the target guard. Call this first."""
     sys.stderr.write(BANNER)
     guard_target(args.target, args.force, getattr(args, "authorization", None))
+    if getattr(args, "insecure", False):
+        # Expected under TLS_MODE=internal; the per-request warning would drown
+        # the scoreboard the demo is built around.
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+def new_session(args, **headers):
+    """A requests Session carrying the run's TLS policy."""
+    session = requests.Session()
+    session.verify = not getattr(args, "insecure", False)
+    if headers:
+        session.headers.update(headers)
+    return session
 
 
 def base_parser(description):
@@ -195,6 +211,9 @@ def base_parser(description):
     parser.add_argument("--seed", type=int, default=None, help="RNG seed for a reproducible dump")
     parser.add_argument("--timeout", type=float, default=10.0, help="per-request timeout in seconds")
     parser.add_argument("--out", default=None, help="write confirmed live cards to this JSON file")
+    parser.add_argument("--insecure", action="store_true",
+                        help="skip TLS verification; needed for TLS_MODE=internal, "
+                             "where Caddy issues from its own local CA")
     parser.add_argument("--force", action="store_true",
                         help="run against a non-lab host; requires --authorization")
     parser.add_argument("--authorization", default=None,

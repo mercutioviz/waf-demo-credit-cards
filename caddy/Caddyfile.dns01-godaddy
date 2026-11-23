@@ -1,0 +1,27 @@
+# TLS_MODE=dns01-godaddy -- ACME DNS-01 against GoDaddy's DNS API.
+#
+# Only needed when HTTP-01 will not work: port 80 blocked inbound, or the host
+# is not reachable from the public internet at the time of issuance. Otherwise
+# prefer http01, which needs no DNS API credentials at all.
+#
+# Requires in .env: GODADDY_API_TOKEN, in GoDaddy's "<API_KEY>:<API_SECRET>"
+# form, from https://developer.godaddy.com/keys
+#
+# GoDaddy gates API access on account tier; if the key will not authenticate,
+# use http01 instead rather than fighting it.
+{
+	email {$ACME_EMAIL}
+}
+
+(godaddy_tls) {
+	tls {
+		dns godaddy {env.GODADDY_API_TOKEN}
+	}
+}
+
+{$INSECURE_HOST} {
+	import godaddy_tls
+	reverse_proxy checkout-insecure:5000
+}
+
+import /etc/caddy/origin.caddyfile

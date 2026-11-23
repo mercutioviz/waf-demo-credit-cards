@@ -32,8 +32,8 @@ USER_AGENTS = (
 )
 
 
-def new_session(rng, target):
-    session = requests.Session()
+def new_session(rng, target, args):
+    session = labcards.new_session(args)
     session.headers.update({
         "User-Agent": rng.choice(USER_AGENTS),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -68,7 +68,7 @@ def main():
         if index % args.cards_per_session == 0:
             if session:
                 session.close()
-            session = new_session(rng, args.target)
+            session = new_session(rng, args.target, args)
             try:
                 session.get(base + "/", timeout=args.timeout)
             except requests.RequestException:

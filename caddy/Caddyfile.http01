@@ -1,0 +1,18 @@
+# TLS_MODE=http01 -- the default, and the right choice for most deployments.
+#
+# Caddy solves the ACME HTTP-01 challenge over port 80. No DNS API credentials
+# are needed, so this works with ANY DNS provider: GoDaddy, Barracuda WaaS DNS
+# Zones, Cloudflare, or a registrar's web console. All you create is one A
+# record pointing INSECURE_HOST at this host.
+#
+# Requires: port 80 reachable from the public internet, and INSECURE_HOST
+# already resolving to this host before `make up`.
+{
+	email {$ACME_EMAIL}
+}
+
+{$INSECURE_HOST} {
+	reverse_proxy checkout-insecure:5000
+}
+
+import /etc/caddy/origin.caddyfile

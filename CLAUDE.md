@@ -38,6 +38,24 @@ as `{$VAR}` in the Caddyfile), to the Makefile (sourced in a shell, not
 Defaults are the `democuda.org` names. If you add a hostname reference, read it
 from one of those rather than writing a literal.
 
+**TLS is pluggable.** `TLS_MODE` selects which `caddy/Caddyfile.<mode>` compose
+mounts: `http01` (default), `dns01-route53`, `dns01-godaddy`,
+`dns01-cloudflare`, `internal`. Each is a small file importing the shared
+`caddy/origin.caddyfile`, which holds the `:8081` WaaS origin block — that block
+is mode-independent because **WaaS terminates TLS at its edge, so the secure
+side never needs a certificate**. Keep it that way: TLS changes belong in the
+mode files only.
+
+All DNS provider modules are compiled into one image. Caddy has no runtime
+plugin loading, so adding a provider means a `--with` line in `caddy/Dockerfile`
+plus a new mode file. Prefer `http01` in docs and defaults — most deployments do
+not need DNS API credentials, and recommending otherwise sends SAs chasing
+provider keys they do not need.
+
+`--insecure` on the attack scripts exists for `internal` mode, where Caddy
+issues from its own local CA. It sets `verify=False` on the requests Session and
+`ignore_https_errors` on the Playwright context.
+
 Both run the same image and share `LAB_SECRET` so the comparison is
 like-for-like. They differ only by `INSTANCE_NAME`.
 
@@ -112,7 +130,10 @@ layers instead: the `NOTICE`, the runtime banners, and the target allowlist.
 waf-demo-credit-cards/
 ├── docker-compose.yml          # name: waf-demo-credit-cards
 ├── Makefile                    # up, down, build, logs, ps, reset
-├── caddy/                      # custom Caddy build (Route53 DNS-01) + vhosts
+├── caddy/                      # custom Caddy build; one Caddyfile per TLS_MODE
+│   ├── Dockerfile              # xcaddy with route53, godaddy, cloudflare
+│   ├── origin.caddyfile        # shared :8081 WaaS origin block
+│   └── Caddyfile.<mode>        # http01 | dns01-* | internal
 ├── brand/                      # Tek Gear assets, vendored from waf-firing-range
 ├── app/
 │   ├── Dockerfile              # repo-root build context so COPY brand/ works

@@ -1,0 +1,23 @@
+# TLS_MODE=internal -- no public DNS, no ACME, no internet required.
+#
+# Caddy issues the certificate from its own local CA. Browsers will warn unless
+# you trust that CA, and the attack scripts need --insecure equivalents, so this
+# is for building and rehearsing the demo rather than running it for a prospect.
+#
+# Point the hostnames at the machine with /etc/hosts entries:
+#     127.0.0.1  insecure.pay.example.test
+#     127.0.0.1  secure.pay.example.test
+#
+# NOTE: WaaS cannot reach an origin that is only resolvable locally, so the
+# secure side of the demo does not work in this mode. Use it for app work, then
+# switch to http01 for anything customer-facing.
+{
+	email {$ACME_EMAIL}
+}
+
+{$INSECURE_HOST} {
+	tls internal
+	reverse_proxy checkout-insecure:5000
+}
+
+import /etc/caddy/origin.caddyfile

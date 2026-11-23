@@ -63,14 +63,14 @@ def main():
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not args.headed)
-        context = browser.new_context()
+        context = browser.new_context(ignore_https_errors=args.insecure)
         page = context.new_page()
 
         for index, record in enumerate(dump):
             if args.cards_per_context and index and index % args.cards_per_context == 0:
                 page.close()
                 context.close()
-                context = browser.new_context()
+                context = browser.new_context(ignore_https_errors=args.insecure)
                 page = context.new_page()
 
             try:
