@@ -7,6 +7,34 @@ it, and a live dashboard showing the victim's side of the attack.
 Built for the case where a customer's payment form is being abused by bots
 testing stolen cards (OWASP OAT-001 Carding and OAT-010 Card Cracking).
 
+---
+
+> ## ⚠ Authorised use only
+>
+> **This repository contains working attack tooling and a deliberately
+> vulnerable web application.**
+>
+> - Run the scripts in `attack/` **only** against systems you own or have
+>   **explicit written permission** to test. Unauthorised access to a computer
+>   system is a criminal offence in most jurisdictions, including under the US
+>   Computer Fraud and Abuse Act and the UK Computer Misuse Act 1990. Testing a
+>   third party's payment form without authorisation may additionally
+>   constitute payment fraud.
+> - **Never supply real cardholder data.** Every card here is synthetic and the
+>   issuer is a local fake. The bundled app stores data in memory in the clear,
+>   is not PCI-DSS compliant, and must never process genuine payments.
+> - **Do not expose `app/` on a public network** without a WAF in front of it or
+>   an ACL restricting access. It has no rate limiting, no bot detection and no
+>   CSRF protection, by design.
+> - This is a personal project. It is **not an official Barracuda Networks
+>   product** and is not endorsed, supported or warranted by them.
+> - Provided **without warranty of any kind**. You are responsible for how you
+>   use it.
+>
+> Full terms in [`NOTICE`](NOTICE) and [`LICENSE`](LICENSE).
+
+---
+
 ## Why it is built as a ladder
 
 A single on/off WAF toggle makes a weak carding demo, because the honest answer
@@ -97,8 +125,12 @@ See `configs/waf/README.md` for the per-rung policy notes.
   `HMAC-SHA256(LAB_SECRET, PAN)` — repeatable here, meaningless anywhere else.
 - No payment network is involved and no real card data exists in this lab.
 - `/ops` only ever displays a masked PAN (first six, last four).
-- The attack scripts refuse any host outside `*.democuda.org` and localhost
-  unless `--force` is given, which prints a warning.
+- Every attack script prints an authorised-use banner before it does anything.
+- The scripts refuse any host outside `*.democuda.org` and localhost. `--force`
+  overrides the allowlist but **cannot be used alone** — it requires
+  `--authorization '<engagement, ticket or permission reference>'`, which is
+  echoed into the run's output. Stating who authorised the test is cheap; it
+  makes an unconsidered run take a deliberate step.
 
 `LAB_SECRET` is never committed. `.env` is gitignored.
 
@@ -117,3 +149,19 @@ docs/       SA demo script
 
 - `waf-firing-range` — deliberately vulnerable apps for kast regression testing.
   This repo borrows its conventions and Tek Gear brand, but is standalone.
+
+## Licence
+
+[Apache License 2.0](LICENSE). See [`NOTICE`](NOTICE) for the attribution and
+security-tooling notice, which Apache-2.0 §4(d) requires redistributors to
+carry — so the authorised-use terms travel with any fork.
+
+Apache-2.0 rather than MIT for three reasons that matter to a public repository
+of offensive tooling: an express patent grant, a trademark clause (§6) so a fork
+cannot imply Barracuda endorsement, and a more explicit limitation of liability
+(§§7–8) than MIT's single sentence.
+
+Note that no OSI-approved licence can restrict *how* software is used — a
+licence that did would not be open source. The licence here limits liability;
+the `NOTICE`, the runtime banners, and the target allowlist are what address
+misuse. They are separate layers doing separate jobs.

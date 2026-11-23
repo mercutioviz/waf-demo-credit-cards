@@ -9,6 +9,11 @@ Expected result with no WAF: it works, and finds roughly LIVE_RATE percent of
 the dump in seconds.
 Expected result with Brute Force Prevention on POST /checkout: outcomes flip to
 'blocked' once the Count Window threshold trips.
+
+AUTHORISED LABORATORY USE ONLY. Simulates payment card fraud; run only
+against systems you own or have written permission to test. See NOTICE.
+
+Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
 """
 
 import time
@@ -40,7 +45,7 @@ def main():
     parser = labcards.base_parser(__doc__.splitlines()[0])
     parser.add_argument("--workers", type=int, default=16, help="concurrent requests")
     args = parser.parse_args()
-    labcards.guard_target(args.target, args.force)
+    labcards.preflight(args)
 
     dump = labcards.build_dump(args.count, args.secret, args.seed)
     url = args.target.rstrip("/") + "/checkout"

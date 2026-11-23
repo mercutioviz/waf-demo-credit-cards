@@ -13,6 +13,11 @@ the tenant is licensed before demonstrating this rung.
 
 Setup:
     pip install playwright && playwright install chromium
+
+AUTHORISED LABORATORY USE ONLY. Simulates payment card fraud; run only
+against systems you own or have written permission to test. See NOTICE.
+
+Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
 """
 
 import time
@@ -46,7 +51,7 @@ def main():
     parser.add_argument("--delay", type=float, default=1.0,
                         help="seconds between cards")
     args = parser.parse_args()
-    labcards.guard_target(args.target, args.force)
+    labcards.preflight(args)
 
     dump = labcards.build_dump(args.count, args.secret, args.seed)
     checkout_url = args.target.rstrip("/") + "/checkout"

@@ -15,6 +15,11 @@ tractable.
 Expected result unprotected: the full card is recovered in a few minutes.
 Expected result with Brute Force Prevention and URL-aware scoring: the run is
 cut off long before either phase completes.
+
+AUTHORISED LABORATORY USE ONLY. Simulates payment card fraud; run only
+against systems you own or have written permission to test. See NOTICE.
+
+Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
 """
 
 import itertools
@@ -87,7 +92,7 @@ def main():
     parser.add_argument("--rate", type=float, default=0.0,
                         help="requests per second; 0 means unthrottled")
     args = parser.parse_args()
-    labcards.guard_target(args.target, args.force)
+    labcards.preflight(args)
 
     pan = "".join(c for c in args.pan if c.isdigit())
     if not labcards.luhn_ok(pan):

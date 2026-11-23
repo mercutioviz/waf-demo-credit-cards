@@ -11,6 +11,11 @@ slowly. That is the point of this tier -- rate limiting buys time, not safety.
 Expected result against Bot Protection: TLS fingerprinting and User-Agent
 analysis end it regardless of pacing, because requests' TLS handshake does not
 look like a browser's at any speed.
+
+AUTHORISED LABORATORY USE ONLY. Simulates payment card fraud; run only
+against systems you own or have written permission to test. See NOTICE.
+
+Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
 """
 
 import random
@@ -45,7 +50,7 @@ def main():
     parser.add_argument("--cards-per-session", type=int, default=5,
                         help="cards to push through one cookie jar before rotating")
     args = parser.parse_args()
-    labcards.guard_target(args.target, args.force)
+    labcards.preflight(args)
 
     rng = random.Random(args.seed)
     dump = labcards.build_dump(args.count, args.secret, args.seed)

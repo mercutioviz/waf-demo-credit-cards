@@ -1,11 +1,18 @@
 """Shared helpers for the carding simulations.
 
-Every card here is synthetic and every target is a lab checkout whose "issuer"
-is a local fake. The dump generator mirrors the issuer's derivation of expiry
-and CVV so records are internally consistent, which is what a real stolen dump
+AUTHORISED LABORATORY USE ONLY. These tools simulate payment card fraud. Run
+them only against systems you own or have explicit written permission to test.
+Unauthorised use is a criminal offence in most jurisdictions. See the NOTICE
+file at the repository root before using anything here.
+
+Every card is synthetic and every target is a lab checkout whose "issuer" is a
+local fake. The dump generator mirrors the issuer's derivation of expiry and
+CVV so records are internally consistent, which is what a real stolen dump
 looks like. It deliberately does not reveal which cards are live -- only
 submitting them tells you that, and that is exactly the question the checkout
 form answers for free when it is left unprotected.
+
+Copyright 2026 Michael S Collins. Licensed under the Apache License 2.0.
 """
 
 import argparse
@@ -27,6 +34,21 @@ ALLOWED_HOST_SUFFIXES = (".democuda.org", "localhost", "127.0.0.1")
 APPROVED_MARKER = "Payment approved"
 DECLINE_PATTERN = re.compile(r"code (\d{2})")
 BLOCK_MARKERS = ("barracuda", "access denied", "request blocked", "blocked by")
+
+BANNER = r"""
++--------------------------------------------------------------------------+
+|  CARDING SIMULATION -- AUTHORISED LABORATORY USE ONLY                    |
+|                                                                          |
+|  This tool simulates payment card fraud (OWASP OAT-001 / OAT-010).       |
+|  Run it only against a system you own, or for which you hold explicit    |
+|  WRITTEN PERMISSION to conduct security testing. Unauthorised use is a   |
+|  criminal offence in most jurisdictions, including under the US          |
+|  Computer Fraud and Abuse Act and the UK Computer Misuse Act 1990.       |
+|                                                                          |
+|  All card numbers are synthetic. Never supply real cardholder data.      |
+|  Provided WITHOUT WARRANTY OF ANY KIND -- see LICENSE and NOTICE.        |
++--------------------------------------------------------------------------+
+"""
 
 
 def luhn_ok(pan):
@@ -113,20 +135,45 @@ def harvest_form_fields(html):
     return parser.fields
 
 
-def guard_target(url, force=False):
+def guard_target(url, force=False, authorization=None):
+    """Refuse to run outside the lab unless authorisation is stated explicitly.
+
+    The allowlist is the real control. --force exists because a lab is
+    occasionally stood up on another domain, but it deliberately cannot be used
+    on its own: pairing it with --authorization makes the operator write down
+    who authorised the test, and puts that reference in the run's output.
+    """
     host = (urlparse(url).hostname or "").lower()
     if any(host == s or host.endswith(s) for s in ALLOWED_HOST_SUFFIXES):
         return
-    if force:
-        sys.stderr.write(
-            f"WARNING: {host} is not a recognised lab host. Continuing because "
-            f"--force was given. Only run this against systems you are authorised to test.\n"
+
+    if not force:
+        sys.exit(
+            f"\nRefusing to run against {host!r}: not a recognised lab host.\n"
+            f"Allowed: {', '.join(ALLOWED_HOST_SUFFIXES)}\n\n"
+            f"If you are authorised to test this host, re-run with:\n"
+            f"    --force --authorization '<engagement, ticket or client reference>'\n"
         )
-        return
-    sys.exit(
-        f"Refusing to run against {host!r}: not a lab host.\n"
-        f"Allowed: {', '.join(ALLOWED_HOST_SUFFIXES)}. Use --force to override."
+
+    if not authorization:
+        sys.exit(
+            f"\n--force requires --authorization.\n\n"
+            f"State the engagement, ticket or written permission that covers testing\n"
+            f"{host!r}, for example:\n"
+            f"    --force --authorization 'PENTEST-4412, scope signed 2026-11-01'\n"
+        )
+
+    sys.stderr.write(
+        f"\n!! Running against {host!r}, which is NOT a lab host.\n"
+        f"!! Asserted authorisation: {authorization}\n"
+        f"!! You are responsible for ensuring this testing is lawful and in scope.\n\n"
     )
+
+
+def preflight(args):
+    """Print the use banner, then enforce the target guard. Call this first."""
+    sys.stderr.write(BANNER)
+    guard_target(args.target, args.force, getattr(args, "authorization", None))
 
 
 def base_parser(description):
@@ -139,7 +186,11 @@ def base_parser(description):
     parser.add_argument("--seed", type=int, default=None, help="RNG seed for a reproducible dump")
     parser.add_argument("--timeout", type=float, default=10.0, help="per-request timeout in seconds")
     parser.add_argument("--out", default=None, help="write confirmed live cards to this JSON file")
-    parser.add_argument("--force", action="store_true", help="run against a non-lab host")
+    parser.add_argument("--force", action="store_true",
+                        help="run against a non-lab host; requires --authorization")
+    parser.add_argument("--authorization", default=None,
+                        help="engagement, ticket or written-permission reference "
+                             "covering a --force run against a non-lab host")
     return parser
 
 

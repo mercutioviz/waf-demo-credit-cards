@@ -65,15 +65,34 @@ exploits, and the developer-fix point the demo closes on.
 
 ## Safety invariants
 
-Do not weaken these.
+**This repository is public.** Do not weaken any of these.
 
 - Synthetic cards only, from published sandbox BIN ranges. No real PANs, ever.
 - No real payment gateway. The issuer stays local and fake.
 - `/ops` displays masked PANs only (first six, last four).
-- `labcards.guard_target()` allowlists `*.democuda.org` and localhost. `--force`
-  exists but warns.
+- `labcards.guard_target()` allowlists `*.democuda.org` and localhost.
+  `--force` overrides it but **requires `--authorization`** — do not make the
+  override usable on its own.
+- `labcards.preflight()` prints the authorised-use banner. Every attack script
+  calls it first. A new tier must call it too.
 - `LAB_SECRET` is env-sourced and never committed, so the live-card oracle is
   not baked into the repo.
+
+## Licence and disclaimers
+
+Apache-2.0, chosen over MIT for the express patent grant, the trademark clause
+(§6, so a fork cannot imply Barracuda endorsement), the explicit limitation of
+liability (§§7–8), and the `NOTICE` mechanism — §4(d) requires redistributors to
+carry it, which is how the authorised-use terms survive a fork.
+
+`NOTICE` is load-bearing, not boilerplate. It carries the authorised-use terms,
+the no-real-cardholder-data warning, and the statement that this is **not an
+official Barracuda Networks product**. Keep that last one: the repo is about
+Barracuda products, authored by a Barracuda employee, published under personal
+copyright. Do not let those blur.
+
+No OSI-approved licence can restrict use, so misuse is addressed by three other
+layers instead: the `NOTICE`, the runtime banners, and the target allowlist.
 
 ## Repository layout
 

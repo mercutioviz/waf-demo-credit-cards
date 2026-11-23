@@ -1,0 +1,62 @@
+waf-demo-credit-cards
+Copyright 2026 Michael S Collins
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.
+
+===============================================================================
+SECURITY TOOLING NOTICE - READ BEFORE USE
+===============================================================================
+
+This repository contains WORKING ATTACK TOOLING. The scripts in attack/
+simulate payment card fraud - bulk testing of card numbers against a checkout
+form (OWASP Automated Threat OAT-001 "Carding") and brute-forcing a card's
+expiry and security code (OAT-010 "Card Cracking").
+
+It exists for one purpose: to demonstrate, in a controlled laboratory, how a
+web application firewall defends a payment form against those attacks.
+
+AUTHORISED USE ONLY
+    Run these tools only against systems you own, or for which you hold
+    explicit written permission to conduct security testing. Unauthorised
+    access to a computer system is a criminal offence in most jurisdictions,
+    including under the US Computer Fraud and Abuse Act and the UK Computer
+    Misuse Act 1990. Testing a third party's payment form without authorisation
+    may additionally constitute payment fraud.
+
+NO REAL CARDHOLDER DATA
+    Every card number these tools generate is synthetic, built against
+    published sandbox BIN ranges. The "issuer" they talk to is a local fake
+    that approves cards based on an HMAC of a lab secret; it has no connection
+    to any payment network and its verdicts are meaningless anywhere else.
+
+    Never supply real cardholder data to this software. The bundled application
+    is deliberately insecure, stores data in memory in the clear, and is not
+    PCI-DSS compliant. It must never be used to process genuine payments.
+
+DELIBERATELY VULNERABLE APPLICATION
+    The application in app/ is intentionally unprotected: no rate limiting, no
+    bot detection, no CSRF token, and deliberately informative decline codes.
+    Do not deploy it on a public network without a web application firewall in
+    front of it or a network ACL restricting access to it.
+
+NOT AN OFFICIAL BARRACUDA NETWORKS PRODUCT
+    This is a personal project. It is not produced, endorsed, supported, or
+    warranted by Barracuda Networks, Inc. References to Barracuda products and
+    documentation are descriptive only. All trademarks are the property of
+    their respective owners; this License grants no trademark rights (see
+    Apache License section 6).
+
+NO WARRANTY, NO LIABILITY
+    This software is provided "AS IS", without warranty of any kind. The author
+    accepts no liability for any claim, damages, or other liability arising
+    from its use or misuse. See the Apache License sections 7 and 8.
+
+You are responsible for how you use this software.

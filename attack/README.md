@@ -4,16 +4,44 @@ Four attacker tiers against the Tek Gear checkout. Each one defeats the control
 that stopped the tier below it, which is what turns a single on/off WAF toggle
 into a demo with a narrative.
 
-## Scope and safety
+## ⚠ Authorised use only
 
-These scripts only work against this lab.
+**These are working payment-fraud simulations.** Run them only against systems
+you own, or for which you hold **explicit written permission** to conduct
+security testing.
 
-- Every card is synthetic, generated against published sandbox BIN ranges.
-- "Approved" is produced by a local fake issuer keyed on `LAB_SECRET`. There is
-  no payment network involved and no real card data anywhere.
-- `labcards.guard_target()` refuses any host outside `*.democuda.org`,
-  `localhost` and `127.0.0.1`. `--force` overrides it and prints a warning.
-  Only ever point these at systems you are authorised to test.
+Unauthorised access to a computer system is a criminal offence in most
+jurisdictions, including under the **US Computer Fraud and Abuse Act** and the
+**UK Computer Misuse Act 1990**. Testing a third party's payment form without
+authorisation may additionally constitute payment fraud. Having a copy of this
+code is not a defence, and neither is "it was only a test".
+
+Read [`../NOTICE`](../NOTICE) before using anything here.
+
+## Why these are safe to publish
+
+They are built to be useless outside a lab:
+
+- **Synthetic cards only**, generated against published sandbox BIN ranges.
+  No real PAN is ever handled, and none should ever be supplied.
+- **The issuer is a local fake.** "Approved" means an HMAC of `LAB_SECRET`
+  crossed a threshold. There is no payment network, and a verdict here means
+  nothing anywhere else.
+- **The target is allowlisted.** `labcards.guard_target()` refuses any host
+  outside `*.democuda.org`, `localhost` and `127.0.0.1`.
+- **`--force` cannot be used alone.** Overriding the allowlist also requires
+  `--authorization '<engagement, ticket or permission reference>'`, which is
+  echoed into the run's output:
+
+  ```
+  python3 t1_blast.py --target https://shop.client.example \
+      --force --authorization 'PENTEST-4412, scope signed 2026-11-01'
+  ```
+
+  This is friction, not security — anyone can type a string. The point is that
+  it makes running against a non-lab host a deliberate act with a written
+  reason, rather than a flag someone adds without thinking.
+- **Every script prints an authorised-use banner** to stderr before it runs.
 
 ## Setup
 
